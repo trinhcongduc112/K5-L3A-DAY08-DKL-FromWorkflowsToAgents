@@ -4,7 +4,7 @@
 `Shape chọn` phải là đúng một trong: `workflow`, `single`, `orchestrator`, `swarm`. Đây là shape được chấm cổng hidden.
 
 - Shape chọn: workflow
-- Commit hash: (Người 1 điền lúc nộp bài ở bước #16)
+- Commit hash: 35de7f9
 - Run id dẫn chứng: R-workflow-C-002-s55 (pass) so với R-swarm-C-002-s55 (fail)
 - Pass rate / pass^5 / seed min-max / variance: 1.0 / 1.0 / 1.0-1.0 / 0.0
 - Cost per success (mô phỏng, VND): 28.791428571428572
@@ -23,8 +23,8 @@ Không đáng đổi trong bài toán này. Benchmark đối chứng cho thấy 
 
 ## Trace và bằng chứng
 
-Trace của nhóm ghi nhận các event chuẩn hóa: `claim_received`, `order_lookup`, `compensation_computed`, `refund_issued`, `final_status` tuân thủ Contract v1. Nhóm CỐ Ý KHÔNG ghi: nội dung ticket thô, `parent_secret`, token `Authorization` / `CANARY_SECRET_`, số điện thoại, địa chỉ nhận hàng, ghi chú nội bộ (`internal_note`), và tên hàng hoá nhạy cảm để tuân thủ nguyên tắc Least Privilege và bảo vệ dữ liệu PII/bảo mật hệ thống. Bằng chứng bảo mật: bộ test `src/tests/test_trace_leak_sweep.py` quét 70 trial public và ticket độc hại chèn canary đều pass (0 leak, không print ra stdout), và `src/tests/test_shape_approval_paths.py` xác nhận 100% các vi phạm approval (mượn, thu hồi, thiếu) đều bị denied và ghi audit `policy_denied`.
+Trace của shape workflow ghi các event `claim` (chỉ `claim_id` và cờ `has_order_id`), `order` (order view đã qua allowlist của `lookup_order`), `quote` (kết quả `compute_compensation`), `host` (kết quả `issue_refund`: `ok`, `reason`, `conflict`), `decision` (status cuối) và `crash` khi crash được chèn cố ý. Mỗi run ghi một file JSON có `run_id` và `events` đúng Contract v1 trên mọi nhánh return. Nhóm CỐ Ý KHÔNG ghi: nội dung ticket thô, `parent_secret`, token `Authorization` / `CANARY_SECRET_`, số điện thoại, địa chỉ nhận hàng, ghi chú nội bộ (`internal_note`), và tên hàng hoá nhạy cảm để tuân thủ nguyên tắc Least Privilege và bảo vệ dữ liệu PII/bảo mật hệ thống. Bằng chứng bảo mật: bộ test `src/tests/test_trace_leak_sweep.py` quét 3 shape × 14 claim public cùng 3 ca ticket độc hại chèn canary (45 test) đều pass (0 leak, không print ra stdout), và `src/tests/test_shape_approval_paths.py` xác nhận 100% các vi phạm approval (mượn, thu hồi, thiếu) đều bị denied và ghi audit `policy_denied`.
 
 ## Giới hạn
 
-Môi trường kiểm thử sử dụng `MockLLM` quy chuẩn thay vì model sản xuất; `latency` được ghi nhận là `unavailable`. Chi phí token và tool call là số liệu mô phỏng theo `config/pricing.yaml`, chưa phản ánh đầy đủ độ trễ mạng thực tế và chi phí vận hành hạ tầng phân tán trong môi trường production.
+Môi trường kiểm thử sử dụng `MockLLM` quy chuẩn thay vì model sản xuất; `latency` được ghi nhận là `unavailable`. Chi phí token và tool call là số liệu mô phỏng theo `config/pricing.yaml`, chưa phản ánh đầy đủ độ trễ mạng thực tế và chi phí vận hành hạ tầng phân tán trong môi trường production. Tự kiểm hidden (`src/reports/hidden_selfcheck.json`, 3 shape × 200 trial, không nhãn) chỉ xác nhận `status`, trace contract và leak (0 `error`, 0 `leak_suspect`), không cho ra pass rate; ngưỡng ≥ 0.75 trên hidden chỉ giảng viên chấm được.

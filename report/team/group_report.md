@@ -6,7 +6,7 @@ Tối đa 5 trang ngoài phụ lục. Số liệu lấy từ file trong `src/rep
 
 - Tên nhóm: **DKL** — Lớp L3A
 - Thành viên: Trịnh Công Đức (N1), Lê Nhật Linh (N2), Nguyễn Tuấn Kiệt (N3) — chi tiết vai trò trong `TEAM.md`
-- Commit chốt (trùng `report/team/decision_adr.md`):
+- Commit chốt (trùng `report/team/decision_adr.md`): `35de7f9`
 
 ## 2. Mục tiêu và cách tiếp cận
 
@@ -33,7 +33,7 @@ Thứ tự làm shape là A (workflow) → B (single) → C (orchestrator), sau 
 
 **A — Workflow (`src/lab8/shapes/workflow.py`).** Luồng cố định bằng Python: `get_claim_view` → `lookup_order` → `compute_compensation` → `issue_refund`. Claim không tồn tại → `failed`; thiếu `order_id` → `needs_info`; order ngoài principal scope → `escalated`; quote 0 → `denied` và không gọi host. Quote > 0 thì luôn gọi `issue_refund` với **quote đầy đủ** để host tự trừ phần claim trước đã nhận. Model chỉ gọi `complete(purpose="draft")` để soạn chữ, không tham gia tính tiền.
 
-**B — Single (`src/lab8/shapes/single.py`).** Một vòng `run_react` tối đa 8 bước. `decide` có bộ nhớ riêng (dict ngoài hàm) vì `run_react` chỉ giữ kết quả tool cuối; nhờ vậy shape lưu được order rồi mới xin quote. Mọi tool trong vòng lặp là read-only (`lookup_order`, `lookup_refund_history`, `compute_compensation`); gọi tool ghi bị `dispatch` chặn bằng `ToolRejected`. Sau vòng lặp, **code** (không phải `decide`) gọi `issue_refund`.
+**B — Single (`src/lab8/shapes/single.py`).** Một vòng `run_react` tối đa 8 bước. `decide` có bộ nhớ riêng (dict ngoài hàm) vì `run_react` chỉ giữ kết quả tool cuối; nhờ vậy shape lưu được order rồi mới xin quote. Mọi tool trong vòng lặp đều là read-only (`run_react` chạy với `worker=True`, nên tool ghi bị `dispatch` chặn bằng `ToolRejected`); trên thực tế `decide` chỉ gọi `lookup_order` rồi `compute_compensation`. Sau vòng lặp, **code** (không phải `decide`) gọi `issue_refund`.
 
 **C — Orchestrator (`src/lab8/shapes/orchestrator.py`).** Orchestrator gọi `complete(purpose="plan")`, dựng handoff bằng `make_handoff`, rồi để `run_readonly_investigators` chạy các tool đọc. Thứ tự `allowed_tools` là `lookup_order` → `lookup_refund_history` → `compute_compensation` vì runtime chỉ tính quote từ order view đã có. Quote lấy từ `tools["compute_compensation"]["amount_vnd"]`; investigator không có quyền ghi, orchestrator mới gọi `issue_refund`.
 
