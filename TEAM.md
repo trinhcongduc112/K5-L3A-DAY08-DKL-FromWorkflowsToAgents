@@ -5,14 +5,14 @@
 - Tên nhóm: DKL
 - Lớp: L3A
 - Repo nhóm: `K5-L3A-DAY08-DKL-FromWorkflowsToAgents` (xem [SUBMISSION.md](SUBMISSION.md))
-- URL repo, nhánh nộp, commit chốt: https://github.com/trinhcongduc112/K5-L3A-DAY08-DKL-FromWorkflowsToAgents, nhánh `main`, commit chốt: `35de7f9`
+- URL repo, nhánh nộp, commit chốt: https://github.com/trinhcongduc112/K5-L3A-DAY08-DKL-FromWorkflowsToAgents, nhánh `main`, commit chốt: `0013ac1`
 
 ## Thành viên
 
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
 |   1 | Trịnh Công Đức | 2A202603527 | 26ai.ductc2@vinuni.edu.vn | [trinhcongduc112](https://github.com/trinhcongduc112) | Nhóm trưởng; workflow + tích hợp, nộp bài |
-|   2 | Lê Nhật Linh | 2A202603514 | 26ai.linhln@vinuni.edu.vn | NhatLinh056 | single + benchmark, ADR |
+|   2 | Lê Nhật Linh | 2A202603514 | 26ai.linhln@vinuni.edu.vn | [NhatLinh056](https://github.com/NhatLinh056) | single + benchmark, ADR |
 |   3 | Nguyễn Tuấn Kiệt | 2A202603417 | 26ai.kietnt3@vinuni.edu.vn | [kite1143](https://github.com/kite1143) | orchestrator + bảo mật trace, báo cáo nhóm |
 
 Gợi ý chia vai:
